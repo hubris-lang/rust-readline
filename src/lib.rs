@@ -12,6 +12,7 @@ use libc::c_char;
 
 use std::ffi::CString;
 use std::ffi::CStr;
+use std::path::Path;
 use std::ptr;
 use std::string::String;
 
@@ -33,6 +34,8 @@ mod ext_readline {
         pub fn stifle_history(n: i32);
         pub fn unstifle_history() -> i32;
         pub fn history_is_stifled() -> i32;
+        pub fn read_history(filename: *const c_char) -> i32;
+        pub fn write_history(filename: *const c_char) -> i32;
 
         /* readline */
         pub fn readline(p: *const c_char) -> *const c_char;
@@ -143,4 +146,16 @@ pub fn history() -> Vec<String> {
 
     result
   }
+}
+
+pub fn read_history(path: &Path) -> i32 {
+    unsafe {
+        ext_readline::read_history(path.to_str().unwrap().as_ptr() as *const i8)
+    }
+}
+
+pub fn write_history(path: &Path) -> i32 {
+    unsafe {
+        ext_readline::write_history(path.to_str().unwrap().as_ptr() as *const i8)
+    }
 }
